@@ -1,5 +1,49 @@
-﻿<h3>Categories</h3>
+﻿@page "/categories"
+
+@inject IDialogService DialogService
+@inject ITaskService TaskService
+
+<MudGrid>
+    <MudItem sm="12" md="6" lg="4">
+        <MudButton OnClick="OpenNewCategoryDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add category</MudButton>
+        @foreach(var category in CategoryList)
+        {
+            <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2">
+                <MudText Typo="Typo.h6">@category.Name</MudText>
+                <MudButton Style="@GetColor(category)" Class="py-2" />
+            </MudPaper>
+        }
+    </MudItem>
+</MudGrid>
 
 @code {
+    private IEnumerable<Category> CategoryList { get; set; } = new List<Category>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        LoadData();
+    }
+
+    private async Task OpenNewCategoryDialog()
+    {
+        var dialog = await DialogService.ShowAsync<NewCategoryDialog>();
+        var result = await dialog.Result;
+
+        if (result.Data is not null)
+        {
+            await TaskService.CreateCategory(result.Data as NewCategory);
+            await LoadData();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        CategoryList = await TaskService.GetCategories();
+        StateHasChanged();
+    }
+
+    private string GetColor(Category category)
+    {
+        return $"background-color: {category.Color}";
+    }
 }

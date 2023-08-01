@@ -4,7 +4,7 @@
     <MudDialog>
         <TitleContent>
             <MudText Typo="Typo.h6">
-                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3" /> Add task
+                Add task
             </MudText>
         </TitleContent>
         <DialogContent>
@@ -14,7 +14,7 @@
                 <MudSelectItem T="Guid?" Value="@(Guid.Empty)">-</MudSelectItem>
                 @foreach (var category in Categories)
                 {
-                    <MudSelectItem Value="@(category.Id)">@category.Name</MudSelectItem>
+                    <MudSelectItem T="Guid?" Value="@(category.Id)">@category.Name</MudSelectItem>
                 }
             </MudSelect>
         </DialogContent>
@@ -26,7 +26,7 @@
 </EditForm>
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public IEnumerable<Category> Categories { get; set; }
+    [Parameter] public IEnumerable<Category> Categories { get; set; } = new List<Category>();
 
     private EditForm form;
     private NewTaskForm model = new NewTaskForm();
@@ -35,7 +35,6 @@
     {
         if (context.Validate())
         {
-            Console.WriteLine(string.Join('\n', context.GetValidationMessages()));
             MudDialog.Close<NewTask>(new NewTask(model.Title, model.Description, model.CategoryId == Guid.Empty ? null : model.CategoryId));
         }
     }

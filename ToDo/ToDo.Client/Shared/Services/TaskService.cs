@@ -114,6 +114,17 @@ namespace ToDo.Client.Shared.Services
             await SaveData();
         }
 
+        public async Task CreateCategory(NewCategory data)
+        {
+            await LoadData();
+
+            var category = new Category(Guid.NewGuid(), data.Name, data.Color);
+
+            categories.Add(category);
+
+            await SaveData();
+        }
+
         private async Task LoadData()
         {
             var loadedTasks = await runtime.InvokeAsync<string>("localStorage.getItem", "tasks");

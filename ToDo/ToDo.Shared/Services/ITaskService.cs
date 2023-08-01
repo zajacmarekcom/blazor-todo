@@ -6,6 +6,7 @@ namespace ToDo.Shared.Services;
 public interface ITaskService
 {
     Task Create(NewTask data);
+    Task CreateCategory(NewCategory data);
     Task Remove(Guid taskId);
     Task Update(UpdateTask data);
     Task ChangeStatus(Guid taskId, Status newStatus);

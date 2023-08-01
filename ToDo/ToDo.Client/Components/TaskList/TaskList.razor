@@ -3,43 +3,97 @@
 
 <MudDropContainer T="TaskItem" Items="Tasks" ItemsSelector="@((item,column) => item.Status == column)" ItemDropped="@((item) => OnDrop(item))" Class="d-flex flex-wrap flex-grow-1">
     <ChildContent>
-        <MudDropZone T="TaskItem" Identifier="@Status.ToDo.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
-            <MudText Typo="Typo.h6"><b>To Do</b></MudText>
-            <MudButton OnClick="OpenNewTaskDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
-        </MudDropZone>
-        <MudDropZone T="TaskItem" Identifier="@Status.InProgress.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
-            <MudText Typo="Typo.h6"><b>In Progress</b></MudText>
-        </MudDropZone>
+        <MudGrid>
+            <MudItem sm="12" md="6">
+                <MudDropZone T="TaskItem" Identifier="@Status.ToDo.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1" Style="min-height: 400px">
+                    <MudText Typo="Typo.h6"><b>To Do</b></MudText>
+                    <MudButton OnClick="OpenNewTaskDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
+                </MudDropZone>
+            </MudItem>
+            <MudItem sm="12" md="6">
+                <MudDropZone T="TaskItem" Identifier="@Status.InProgress.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1" Style="min-height: 400px">
+                    <MudText Typo="Typo.h6"><b>In Progress</b></MudText>
+                </MudDropZone>
+            </MudItem>
+        </MudGrid>
+        
+        
     </ChildContent>
     <ItemRenderer>
-        <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2" Style="@(GetBackground(context))">
-            <MudText Typo="Typo.h6">@context.Title</MudText>
-            <MudText Typo="Typo.body2">@context.Description</MudText>
+        <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2 d-flex justify-space-between">
+                <div class="px-1 me-2" style="@(GetBackground(context))">
+                </div>
+                <div>
+                <MudText Typo="Typo.h6">@context.Title</MudText>
+                <MudText Typo="Typo.body2">@context.Description</MudText>
+                </div>
+            <div>
+                @if (context.Status == Status.InProgress.ToString())
+                {
+                    <MudIconButton OnClick="@(() => Finish(context))" Icon="@Icons.Material.Filled.Done" Variant="Variant.Filled" Color="Color.Success" Size="Size.Large" />
+                }
+                else
+                {
+                    <MudIconButton OnClick="@(() => Finish(context))" Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" />
+                }
+            </div>
         </MudPaper>
     </ItemRenderer>
 </MudDropContainer>
 
+<MudPaper Elevation="0" Class="mx-4">
+    <MudSwitch @bind-Checked="ShowDone">Show done tasks</MudSwitch>
+
+    @if (ShowDone)
+    {
+        <MudGrid>
+            <MudItem sm="12">
+                <MudPaper Elevation="0">
+                    <MudText Typo="Typo.h6"><b>Done</b></MudText>
+                    @foreach (var task in Tasks.Where(x => x.Status == Status.Done.ToString()))
+                    {
+                        <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2 d-flex justify-start">
+                            <div class="px-1 me-2" style="@(GetBackground(task))">
+                            </div>
+                            <div>
+                                <MudText Typo="Typo.h6">@task.Title</MudText>
+                                <MudText Typo="Typo.body2">@task.Description</MudText>
+                            </div>
+                        </MudPaper>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+    }
+</MudPaper>
+
 @code {
     private List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
+    private bool ShowDone { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        Tasks = (await TaskService.GetAll()).Select(x => new TaskItem
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                Category = x.Category,
-                Status = x.Status.ToString()
-            }).ToList();
-        StateHasChanged();
+        await LoadData();
     }
 
     private async Task OnDrop(MudItemDropInfo<TaskItem> drop)
     {
         drop.Item.Status = drop.DropzoneIdentifier;
-        Console.WriteLine(Enum.Parse<Status>(drop.DropzoneIdentifier));
         await TaskService.ChangeStatus(drop.Item.Id, Enum.Parse<Status>(drop.DropzoneIdentifier));
+    }
+
+    private async Task Finish(TaskItem task)
+    {
+        task.Status = Status.Done.ToString();
+        await TaskService.ChangeStatus(task.Id, Status.Done);
+        await LoadData();
+    }
+
+    private async Task Remove(TaskItem task)
+    {
+        await TaskService.Remove(task.Id);
+        await LoadData();
     }
 
     private async Task OpenNewTaskDialog()
@@ -52,21 +106,26 @@
         if (result.Data is not null)
         {
             await TaskService.Create(result.Data as NewTask);
-            Tasks = (await TaskService.GetAll()).Select(x => new TaskItem
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Description = x.Description,
-                    Category = x.Category,
-                    Status = x.Status.ToString()
-                }).ToList();
-            StateHasChanged();
+            await LoadData();
         }
+    }
+
+    private async Task LoadData()
+    {
+        Tasks = (await TaskService.GetAll()).Select(x => new TaskItem
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                Category = x.Category,
+                Status = x.Status.ToString()
+            }).ToList();
+        StateHasChanged();
     }
 
     private string GetBackground(TaskItem task)
     {
-        return task.Category is null ? string.Empty : $"background-color: {task.Category.Color}";
+        return "width: 24px; " + (task.Category is null ? "background-color: #fff" : $"background-color: {task.Category.Color}");
     }
 
     public class TaskItem
