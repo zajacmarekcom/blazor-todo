@@ -1,9 +1,9 @@
 ﻿@page "/{categoryId:guid?}"
 
-<TaskList/>
+<CascadingValue Value="CategoryId">
+    <TaskList />
+</CascadingValue>
 
 @code {
     [Parameter] public Guid? CategoryId { get; set; }
-
-
 }

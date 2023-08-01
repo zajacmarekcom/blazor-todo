@@ -11,8 +11,9 @@ public interface ITaskService
     Task Update(UpdateTask data);
     Task ChangeStatus(Guid taskId, Status newStatus);
     Task ChangeCategory(Guid taskId, Guid categoryId);
-    Task<IEnumerable<TaskModel>> GetAll();
+    Task<IEnumerable<TaskModel>> GetAll(Guid? withCategory);
     Task<IEnumerable<TaskModel>> GetWithStatus(Status status);
     Task<IEnumerable<Category>> GetCategories();
+    Task<Category?> GetCategory(Guid categoryId);
 }
 

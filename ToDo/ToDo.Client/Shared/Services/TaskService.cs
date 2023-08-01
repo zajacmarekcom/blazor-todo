@@ -44,11 +44,11 @@ namespace ToDo.Client.Shared.Services
             await SaveData();
         }
 
-        public async Task<IEnumerable<TaskModel>> GetAll()
+        public async Task<IEnumerable<TaskModel>> GetAll(Guid? withCategory)
         {
             await LoadData();
 
-            return tasks;
+            return withCategory is null ? tasks : tasks.Where(x => x.Category is not null && x.Category.Id == withCategory);
         }
 
         public async Task<IEnumerable<TaskModel>> GetWithStatus(Status status)
@@ -63,6 +63,11 @@ namespace ToDo.Client.Shared.Services
             await LoadData();
 
             return categories;
+        }
+
+        public async Task<Category?> GetCategory(Guid categoryId)
+        {
+            return categories.FirstOrDefault(x => x.Id == categoryId);
         }
 
         public async Task ChangeStatus(Guid taskId, Status newStatus)
