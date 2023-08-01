@@ -1,9 +1,9 @@
-﻿@page "/"
+﻿@page "/{categoryId:guid?}"
 
-<PageTitle>Index</PageTitle>
+<TaskList/>
 
-<h1>Hello, world!</h1>
+@code {
+    [Parameter] public Guid? CategoryId { get; set; }
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+}

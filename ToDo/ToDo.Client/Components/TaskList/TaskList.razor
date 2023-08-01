@@ -1,0 +1,80 @@
+﻿@inject IDialogService DialogService
+@inject ITaskService TaskService
+
+<MudDropContainer T="TaskItem" Items="Tasks" ItemsSelector="@((item,column) => item.Status == column)" ItemDropped="@((item) => OnDrop(item))" Class="d-flex flex-wrap flex-grow-1">
+    <ChildContent>
+        <MudDropZone T="TaskItem" Identifier="@Status.ToDo.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
+            <MudText Typo="Typo.h6"><b>To Do</b></MudText>
+            <MudButton OnClick="OpenNewTaskDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
+        </MudDropZone>
+        <MudDropZone T="TaskItem" Identifier="@Status.InProgress.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
+            <MudText Typo="Typo.h6"><b>In Progress</b></MudText>
+        </MudDropZone>
+    </ChildContent>
+    <ItemRenderer>
+        <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2" Style="@(GetBackground(context))">
+            <MudText Typo="Typo.h6">@context.Title</MudText>
+            <MudText Typo="Typo.body2">@context.Description</MudText>
+        </MudPaper>
+    </ItemRenderer>
+</MudDropContainer>
+
+@code {
+    private List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Tasks = (await TaskService.GetAll()).Select(x => new TaskItem
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                Category = x.Category,
+                Status = x.Status.ToString()
+            }).ToList();
+        StateHasChanged();
+    }
+
+    private async Task OnDrop(MudItemDropInfo<TaskItem> drop)
+    {
+        drop.Item.Status = drop.DropzoneIdentifier;
+        Console.WriteLine(Enum.Parse<Status>(drop.DropzoneIdentifier));
+        await TaskService.ChangeStatus(drop.Item.Id, Enum.Parse<Status>(drop.DropzoneIdentifier));
+    }
+
+    private async Task OpenNewTaskDialog()
+    {
+        var categories = await TaskService.GetCategories();
+        var parameters = new DialogParameters<NewTaskDialog> { { x => x.Categories, categories } };
+        var dialog = await DialogService.ShowAsync<NewTaskDialog>("", parameters);
+        var result = await dialog.Result;
+
+        if (result.Data is not null)
+        {
+            await TaskService.Create(result.Data as NewTask);
+            Tasks = (await TaskService.GetAll()).Select(x => new TaskItem
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Category = x.Category,
+                    Status = x.Status.ToString()
+                }).ToList();
+            StateHasChanged();
+        }
+    }
+
+    private string GetBackground(TaskItem task)
+    {
+        return task.Category is null ? string.Empty : $"background-color: {task.Category.Color}";
+    }
+
+    public class TaskItem
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public string? Description { get; set; }
+        public Category? Category { get; set; }
+        public string Status { get; set; }
+    }
+}
