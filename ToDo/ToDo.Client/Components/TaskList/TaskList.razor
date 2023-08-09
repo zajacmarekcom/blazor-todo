@@ -38,7 +38,7 @@
                 else
                 {
                     <MudIconButton OnClick="@(() => Remove(context))" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Info" Size="Size.Medium" />
-                    <MudIconButton OnClick="@(() => OpenUpdateTaskDialog())" Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" />
+                    <MudIconButton OnClick="@(() => OpenUpdateTaskDialog(new TaskModel(context.Id, context.Title, context.Description, Status.ToDo, context.Category)))" Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" />
                 }
             </div>
         </MudPaper>
