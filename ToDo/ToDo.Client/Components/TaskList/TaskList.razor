@@ -37,7 +37,8 @@
                 }
                 else
                 {
-                    <MudIconButton OnClick="@(() => Remove(context))" Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" />
+                    <MudIconButton OnClick="@(() => Remove(context))" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Info" Size="Size.Medium" />
+                    <MudIconButton OnClick="@(() => OpenUpdateTaskDialog())" Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" />
                 }
             </div>
         </MudPaper>
@@ -117,6 +118,20 @@
         if (result.Data is not null)
         {
             await TaskService.Create(result.Data as NewTask);
+            await LoadData();
+        }
+    }
+
+    private async Task OpenUpdateTaskDialog(TaskModel selectedTask)
+    {
+        var categories = await TaskService.GetCategories();
+        var parameters = new DialogParameters<UpdateTaskDialog> { { x => x.Categories, categories }, { x => x.TaskToUpdate, selectedTask } };
+        var dialog = await DialogService.ShowAsync<UpdateTaskDialog>("", parameters);
+        var result = await dialog.Result;
+
+        if (result.Data is not null)
+        {
+            await TaskService.Update(result.Data as UpdateTask);
             await LoadData();
         }
     }

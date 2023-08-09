@@ -16,4 +16,10 @@
     <ProjectReference Include="..\ToDo.Shared\ToDo.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\Dialogs\UpdateTaskDialog.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

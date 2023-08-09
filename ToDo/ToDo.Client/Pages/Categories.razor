@@ -8,11 +8,15 @@
         <MudButton OnClick="OpenNewCategoryDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add category</MudButton>
         @foreach(var category in CategoryList)
         {
-            <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2">
-                <MudLink Href="@("/" + category.Id)">
+            <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2 d-flex justify-space-between">
+                <div class="px-1 me-2" style="@(GetColor(category))">
+                </div>
+                <div>
                     <MudText Typo="Typo.h6">@category.Name</MudText>
-                </MudLink>
-                <MudButton Style="@GetColor(category)" Class="py-2" />
+                </div>
+                <div>
+                    <MudIconButton OnClick="@(() => OpenUpdateCategoryDialog(category))" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Info" Size="Size.Medium" />
+                </div>
             </MudPaper>
         }
     </MudItem>
@@ -23,7 +27,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        LoadData();
+        await LoadData();
     }
 
     private async Task OpenNewCategoryDialog()
@@ -38,6 +42,19 @@
         }
     }
 
+    private async Task OpenUpdateCategoryDialog(Category selectedCategory)
+    {
+        var parameters = new DialogParameters<UpdateCategoryDialog> { { x => x.CategoryToUpdate, selectedCategory } };
+        var dialog = await DialogService.ShowAsync<UpdateCategoryDialog>("", parameters);
+        var result = await dialog.Result;
+
+        if (result.Data is not null)
+        {
+            await TaskService.UpdateCategory(result.Data as UpdateCategory);
+            await LoadData();
+        }
+    }
+
     private async Task LoadData()
     {
         CategoryList = await TaskService.GetCategories();
@@ -46,6 +63,6 @@
 
     private string GetColor(Category category)
     {
-        return $"background-color: {category.Color}";
+        return $"width: 24px; background-color: {category.Color}";
     }
 }

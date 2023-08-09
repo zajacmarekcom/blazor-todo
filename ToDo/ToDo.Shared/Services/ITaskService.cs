@@ -9,6 +9,7 @@ public interface ITaskService
     Task CreateCategory(NewCategory data);
     Task Remove(Guid taskId);
     Task Update(UpdateTask data);
+    Task UpdateCategory(UpdateCategory data);
     Task ChangeStatus(Guid taskId, Status newStatus);
     Task ChangeCategory(Guid taskId, Guid categoryId);
     Task<IEnumerable<TaskModel>> GetAll(Guid? withCategory);

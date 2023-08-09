@@ -151,5 +151,21 @@ namespace ToDo.Client.Shared.Services
             await runtime.InvokeAsync<IEnumerable<TaskModel>>("localStorage.setItem", "tasks", JsonSerializer.Serialize(tasks));
             await runtime.InvokeAsync<IEnumerable<Category>>("localStorage.setItem", "categories", JsonSerializer.Serialize(categories));
         }
+
+        public async Task UpdateCategory(UpdateCategory data)
+        {
+            await LoadData();
+
+            var category = categories.FirstOrDefault(x => x.Id == data.Id);
+
+            if (category is null)
+                return;
+
+            var index = categories.IndexOf(category);
+
+            categories[index] = category with { Name = data.Name, Color = data.Color };
+
+            await SaveData();
+        }
     }
 }
