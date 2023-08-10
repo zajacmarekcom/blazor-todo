@@ -1,4 +1,5 @@
-﻿@using System.ComponentModel.DataAnnotations;
+﻿@    using System.ComponentModel.DataAnnotations;
+    using ToDo.Shared.Dtos;
 <EditForm Model="@model" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
     <MudDialog>
@@ -20,7 +21,7 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public Category? CategoryToUpdate { get; set; }
+    [Parameter] public CategoryDto? CategoryToUpdate { get; set; }
 
     private EditForm form;
     private UpdateCategoryForm model = new UpdateCategoryForm();
@@ -39,7 +40,7 @@
         if (context.Validate())
         {
             Console.WriteLine(model.Color);
-            MudDialog.Close<UpdateCategory>(new UpdateCategory(CategoryToUpdate?.Id ?? Guid.Empty, model.Name, model.Color));
+            MudDialog.Close<UpdateCategoryDto>(new UpdateCategoryDto(CategoryToUpdate?.Id ?? Guid.Empty, model.Name, model.Color));
         }
     }
 

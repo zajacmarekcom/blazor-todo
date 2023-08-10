@@ -1,171 +1,72 @@
 ﻿using Microsoft.JSInterop;
+using System.Net.Http.Json;
 using System.Text.Json;
+using ToDo.Shared.Commands;
+using ToDo.Shared.Dtos;
 using ToDo.Shared.Enums;
-using ToDo.Shared.Models;
 using ToDo.Shared.Services;
 
-namespace ToDo.Client.Shared.Services
+namespace ToDo.Client.Shared.Services;
+
+internal sealed class TaskService : ITaskService
 {
-    internal sealed class TaskService : ITaskService
+    private readonly HttpClient http;
+
+    public TaskService(HttpClient http)
     {
-        private List<TaskModel> tasks = new List<TaskModel>();
-        private List<Category> categories = new List<Category>();
-        private readonly IJSRuntime runtime;
+        this.http = http;
+    }
 
-        public TaskService(IJSRuntime runtime)
-        {
-            this.runtime = runtime;
-        }
+    public async Task ChangeStatus(Guid taskId, Status newStatus)
+    {
+        await http.PutAsJsonAsync<ChangeTaskStatusCommand>("task/status", new(taskId, newStatus));
+    }
 
-        public async Task ChangeCategory(Guid taskId, Guid categoryId)
-        {
-            await LoadData();
+    public async Task Update(UpdateTaskDto data)
+    {
+        await http.PutAsJsonAsync<EditTaskCommand>("task", new(data.Id, data.Title, data.Description, data.CategoryId));
+    }
 
-            var category = categories.FirstOrDefault(c => c.Id == categoryId);
-            var task = tasks.FirstOrDefault(c => c.Id == taskId);
+    public async Task UpdateCategory(UpdateCategoryDto data)
+    {
+        await http.PutAsJsonAsync<EditCategoryCommand>("category", new(data.Id, data.Name, data.Color));
+    }
 
-            if (category is null || task is null)
-                return;
+    public async Task Create(NewTaskDto data)
+    {
+        await http.PostAsJsonAsync<CreateTaskCommand>("task", new(data.Title, data.Description, data.CategoryId));
+    }
 
-            task = task with { Category = category };
+    public async Task CreateCategory(NewCategoryDto data)
+    {
+        await http.PostAsJsonAsync<CreateCategoryCommand>("category", new(data.Name, data.Color));
+    }
 
-            await SaveData();
-        }
+    public async Task<IEnumerable<TaskDto>> GetAll(Guid? withCategory)
+    {
+        var url = withCategory is null ? "task" : $"task?categoryId={withCategory.ToString()}";
 
-        public async Task Create(NewTask data)
-        {
-            await LoadData();
+        var tasks = await http.GetFromJsonAsync<IEnumerable<TaskDto>>(url);
 
-            var category = categories.FirstOrDefault(x => x.Id == data.CategoryId);
+        return tasks ?? new List<TaskDto>();
+    }
 
-            var task = new TaskModel(Guid.NewGuid(), data.Title, data.Description, Status.ToDo, category);
-            tasks.Add(task);
+    public async Task<IEnumerable<CategoryDto>> GetCategories()
+    {
+        var categories = await http.GetFromJsonAsync<IEnumerable<CategoryDto>>("category");
 
-            await SaveData();
-        }
+        return categories ?? new List<CategoryDto>();
+    }
 
-        public async Task<IEnumerable<TaskModel>> GetAll(Guid? withCategory)
-        {
-            await LoadData();
+    public async Task<CategoryDto?> GetCategory(Guid categoryId)
+    {
+        var category = await http.GetFromJsonAsync<CategoryDto>($"category/{categoryId.ToString()}");
 
-            return withCategory is null ? tasks : tasks.Where(x => x.Category is not null && x.Category.Id == withCategory);
-        }
+        return category;
+    }
 
-        public async Task<IEnumerable<TaskModel>> GetWithStatus(Status status)
-        {
-            await LoadData();
-
-            return tasks.Where(x => x.Status == status) ?? new List<TaskModel>();
-        }
-
-        public async Task<IEnumerable<Category>> GetCategories()
-        {
-            await LoadData();
-
-            return categories;
-        }
-
-        public async Task<Category?> GetCategory(Guid categoryId)
-        {
-            return categories.FirstOrDefault(x => x.Id == categoryId);
-        }
-
-        public async Task ChangeStatus(Guid taskId, Status newStatus)
-        {
-            await LoadData();
-
-            var task = tasks.FirstOrDefault(x => x.Id == taskId);
-
-            if (task is null) return;
-
-            var index = tasks.IndexOf(task);
-
-            task = task with { Status = newStatus };
-
-            tasks[index] = task;
-
-            await SaveData();
-        }
-
-        public async Task Remove(Guid taskId)
-        {
-            await LoadData();
-
-            var taskToRemove = tasks.FirstOrDefault(x => x.Id == taskId);
-
-            if (taskToRemove is null) return;
-
-            tasks.Remove(taskToRemove);
-
-            await SaveData();
-        }
-
-        public async Task Update(UpdateTask data)
-        {
-            await LoadData();
-
-            var task = tasks.FirstOrDefault(x => x.Id == data.TaskId);
-
-            if (task is null) return;
-
-            var index = tasks.IndexOf(task);
-
-            var category = categories.FirstOrDefault(x => x.Id == data.CategoryId);
-
-            task = task with { Title = data.Title, Description = data.Description, Category = category };
-
-            tasks[index] = task;
-
-            await SaveData();
-        }
-
-        public async Task CreateCategory(NewCategory data)
-        {
-            await LoadData();
-
-            var category = new Category(Guid.NewGuid(), data.Name, data.Color);
-
-            categories.Add(category);
-
-            await SaveData();
-        }
-
-        private async Task LoadData()
-        {
-            var loadedTasks = await runtime.InvokeAsync<string>("localStorage.getItem", "tasks");
-            var loadedCategories = await runtime.InvokeAsync<string>("localStorage.getItem", "categories");
-
-            if (loadedTasks is not null)
-            {
-                tasks = JsonSerializer.Deserialize<IEnumerable<TaskModel>>(loadedTasks).ToList();
-            }
-
-            if (loadedCategories is not null)
-            {
-                categories = JsonSerializer.Deserialize<IEnumerable<Category>>(loadedCategories).ToList();
-            }
-        }
-
-        private async Task SaveData()
-        {
-            await runtime.InvokeAsync<IEnumerable<TaskModel>>("localStorage.setItem", "tasks", JsonSerializer.Serialize(tasks));
-            await runtime.InvokeAsync<IEnumerable<Category>>("localStorage.setItem", "categories", JsonSerializer.Serialize(categories));
-        }
-
-        public async Task UpdateCategory(UpdateCategory data)
-        {
-            await LoadData();
-
-            var category = categories.FirstOrDefault(x => x.Id == data.Id);
-
-            if (category is null)
-                return;
-
-            var index = categories.IndexOf(category);
-
-            categories[index] = category with { Name = data.Name, Color = data.Color };
-
-            await SaveData();
-        }
+    public async Task Remove(Guid taskId)
+    {
+        await http.DeleteAsync($"task/{taskId.ToString()}");
     }
 }

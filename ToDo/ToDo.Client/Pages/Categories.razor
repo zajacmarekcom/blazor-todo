@@ -23,7 +23,7 @@
 </MudGrid>
 
 @code {
-    private IEnumerable<Category> CategoryList { get; set; } = new List<Category>();
+    private IEnumerable<CategoryDto> CategoryList { get; set; } = new List<CategoryDto>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,12 +37,12 @@
 
         if (result.Data is not null)
         {
-            await TaskService.CreateCategory(result.Data as NewCategory);
+            await TaskService.CreateCategory(result.Data as NewCategoryDto);
             await LoadData();
         }
     }
 
-    private async Task OpenUpdateCategoryDialog(Category selectedCategory)
+    private async Task OpenUpdateCategoryDialog(CategoryDto selectedCategory)
     {
         var parameters = new DialogParameters<UpdateCategoryDialog> { { x => x.CategoryToUpdate, selectedCategory } };
         var dialog = await DialogService.ShowAsync<UpdateCategoryDialog>("", parameters);
@@ -50,7 +50,7 @@
 
         if (result.Data is not null)
         {
-            await TaskService.UpdateCategory(result.Data as UpdateCategory);
+            await TaskService.UpdateCategory(result.Data as UpdateCategoryDto);
             await LoadData();
         }
     }
@@ -61,7 +61,7 @@
         StateHasChanged();
     }
 
-    private string GetColor(Category category)
+    private string GetColor(CategoryDto category)
     {
         return $"width: 24px; background-color: {category.Color}";
     }
