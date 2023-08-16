@@ -4,7 +4,7 @@
 
 @if (CategoryId is not null)
 {
-    <MudText Typo="Typo.h5" Color="@Color.Inherit" Class="my-3 mx-2">Tasks in category: @CategoryName</MudText>
+    <MudText Typo="Typo.h5" Color="@Color.Inherit" Class="my-3 mx-2">@Translations.TasksList_CategoryNameLabel @CategoryName</MudText>
 }
 
 <MudDropContainer T="TaskItem" Items="Tasks" ItemsSelector="@((item,column) => item.Status == column)" ItemDropped="@((item) => OnDrop(item))" Class="d-flex flex-wrap flex-grow-1">
@@ -12,13 +12,13 @@
         <MudGrid>
             <MudItem sm="12" md="6">
                 <MudDropZone T="TaskItem" Identifier="@Status.ToDo.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1" Style="min-height: 400px">
-                    <MudText Typo="Typo.h6"><b>To Do</b></MudText>
-                    <MudButton OnClick="OpenNewTaskDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
+                    <MudText Typo="Typo.h6"><b>@Translations.Task_Status_ToDo</b></MudText>
+                    <MudButton OnClick="OpenNewTaskDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">@Translations.TasksList_AddTaskBtn</MudButton>
                 </MudDropZone>
             </MudItem>
             <MudItem sm="12" md="6">
                 <MudDropZone T="TaskItem" Identifier="@Status.InProgress.ToString()" Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1" Style="min-height: 400px">
-                    <MudText Typo="Typo.h6"><b>In Progress</b></MudText>
+                    <MudText Typo="Typo.h6"><b>@Translations.Task_Status_InProgress</b></MudText>
                 </MudDropZone>
             </MudItem>
         </MudGrid>
@@ -47,14 +47,14 @@
 </MudDropContainer>
 
 <MudPaper Elevation="0" Class="mx-4">
-    <MudSwitch @bind-Checked="ShowDone">Show done tasks</MudSwitch>
+    <MudSwitch @bind-Checked="ShowDone">@Translations.TasksList_ShowDoneTasksToggle</MudSwitch>
 
     @if (ShowDone)
     {
         <MudGrid>
             <MudItem sm="12">
                 <MudPaper Elevation="0">
-                    <MudText Typo="Typo.h6"><b>Done</b></MudText>
+                    <MudText Typo="Typo.h6"><b>@Translations.Task_Status_Done</b></MudText>
                     @foreach (var task in Tasks.Where(x => x.Status == Status.Done.ToString()))
                     {
                         <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2 d-flex justify-start">

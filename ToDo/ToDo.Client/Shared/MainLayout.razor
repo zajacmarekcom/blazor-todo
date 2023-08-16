@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Globalization;
+@inherits LayoutComponentBase
+@inject IJSRuntime JsRuntime
+@inject NavigationManager Navigation
+@inject LocalStorageService LocalStorageService
 
 <MudThemeProvider IsDarkMode="IsDarkMode" />
 <MudDialogProvider />
@@ -17,6 +21,32 @@
         {
             _isDarkMode = value;
             StateHasChanged();
+        }
+    }
+
+    public bool DrawerOpen { get; set; } = true;
+    public void ToggleDrawer()
+    {
+        DrawerOpen = !DrawerOpen;
+    }
+
+    public CultureInfo[] Cultures = new[]
+    {
+        new CultureInfo("en-US"),
+        new CultureInfo("pl-PL")
+    };
+
+    public CultureInfo Culture
+    {
+        get => CultureInfo.CurrentCulture;
+        set
+        {
+            if (CultureInfo.CurrentCulture != value)
+            {
+                LocalStorageService.SetValueAsync("Culture", value.Name).ContinueWith((task) => {
+                    Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+                });
+            }
         }
     }
 }

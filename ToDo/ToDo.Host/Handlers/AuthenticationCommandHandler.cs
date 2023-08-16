@@ -54,6 +54,7 @@ namespace ToDo.Host.Handlers
                 AccessToken = authResult?.AccessToken,
                 RefreshToken = authResult?.RefreshToken,
                 UserName = userInfo?.Login,
+                FullName = userInfo?.Name,
                 Email = userInfo?.Email
             };
         }

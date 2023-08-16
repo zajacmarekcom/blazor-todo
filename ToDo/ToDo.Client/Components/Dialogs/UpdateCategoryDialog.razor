@@ -5,16 +5,16 @@
     <MudDialog>
         <TitleContent>
             <MudText Typo="Typo.h6">
-                Add category
+                @Translations.UpdateCategoryDialog_Title
             </MudText>
         </TitleContent>
         <DialogContent>
-            <MudTextField Label="Name" @bind-Value="model.Name" For="@(() => model.Name)" />
-            <MudColorPicker Label="Color" @bind-Text="model.Color" Style="@($"color: {model.Color};")" />
+            <MudTextField Label="@Translations.UpdateCategoryDialog_Form_NameInput" @bind-Value="model.Name" For="@(() => model.Name)" />
+            <MudColorPicker Label="@Translations.UpdateCategoryDialog_Form_ColorInput" @bind-Text="model.Color" Style="@($"color: {model.Color};")" />
         </DialogContent>
         <DialogActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="px-10">Add</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Cancel" Class="px-10">Cancel</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="px-10">@Translations.Forms_SaveBtn</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Cancel" Class="px-10">@Translations.Forms_CancelBtn</MudButton>
         </DialogActions>
     </MudDialog>
 </EditForm>

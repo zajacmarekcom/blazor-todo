@@ -24,7 +24,8 @@ public class ToDoAuthenticationStateProvider : AuthenticationStateProvider
             claims = new ClaimsIdentity(new Claim[]
             {
                 new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.Name, user.UserName)
+                new(ClaimTypes.NameIdentifier, user.UserName),
+                new(ClaimTypes.Name, user.FullName)
             }, "Api");
         }
 

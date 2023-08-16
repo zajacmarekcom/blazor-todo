@@ -5,13 +5,13 @@
     <MudDialog>
         <TitleContent>
             <MudText Typo="Typo.h6">
-                Add task
+                @Translations.NewTaskDialog_Title
             </MudText>
         </TitleContent>
         <DialogContent>
-            <MudTextField Label="Title" @bind-Value="model.Title" For="@(() => model.Title)" />
-            <MudTextField Label="Description" @bind-Value="model.Description" For="@(() => model.Description)" Lines="3" />
-            <MudSelect Label="Category" @bind-Value="model.CategoryId">
+            <MudTextField Label="@Translations.NewTaskDialog_Form_TitleInput" @bind-Value="model.Title" For="@(() => model.Title)" />
+            <MudTextField Label="@Translations.NewTaskDialog_Form_DescriptionInput" @bind-Value="model.Description" For="@(() => model.Description)" Lines="3" />
+            <MudSelect Label="@Translations.NewTaskDialog_Form_CategoryInput" @bind-Value="model.CategoryId">
                 <MudSelectItem T="Guid?" Value="@(Guid.Empty)">-</MudSelectItem>
                 @foreach (var category in Categories)
                 {
@@ -20,8 +20,8 @@
             </MudSelect>
         </DialogContent>
         <DialogActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="px-10">Add</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Cancel" Class="px-10">Cancel</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="px-10">@Translations.Forms_AddBtn</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Cancel" Class="px-10">@Translations.Forms_CancelBtn</MudButton>
         </DialogActions>
     </MudDialog>
 </EditForm>

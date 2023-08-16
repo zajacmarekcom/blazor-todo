@@ -6,7 +6,7 @@
 
 <MudGrid>
     <MudItem sm="12" md="6" lg="4">
-        <MudButton OnClick="OpenNewCategoryDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add category</MudButton>
+        <MudButton OnClick="OpenNewCategoryDialog" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">@Translations.CategoryList_AddCategoryBtn</MudButton>
         @foreach(var category in CategoryList)
         {
             <MudPaper Elevation="25" Class="pa-3 rounded-lg my-2 d-flex justify-space-between">

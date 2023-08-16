@@ -8,16 +8,28 @@
 
 <MudLayout>
     <MudAppBar Elevation="0">
-                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="(() => ToggleDrawer())" />
-                <MudText Typo="Typo.h5" Class="ml-3">Blazor ToDo</MudText>
-                <MudSpacer />
-                <MudToggleIconButton @bind-Toggled="MainLayout.IsDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" ToggledColor="Color.Inherit" ToggledIcon="@Icons.Material.Filled.DarkMode" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="(() => MainLayout.ToggleDrawer())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Blazor ToDo</MudText>
+        <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudText Typo="Typo.h6" Class="mx-3">@(string.Format(Translations.Dashboard_TopBar_UserName, context.User.Identity?.Name))</MudText>
+                </Authorized>
+            </AuthorizeView>
+        <MudToggleIconButton @bind-Toggled="MainLayout.IsDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" ToggledColor="Color.Inherit" ToggledIcon="@Icons.Material.Filled.DarkMode" />
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0">
+        <MudDrawer @bind-Open="MainLayout.DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0">
         <MudNavMenu>
-            <MudNavLink Href="/" Match="NavLinkMatch.All">Tasks</MudNavLink>
-            <MudNavLink Href="/categories" Match="NavLinkMatch.All">Categories</MudNavLink>
+            <MudNavLink Href="/" Match="NavLinkMatch.All">@Translations.Dashboard_MainMenu_TasksBtn</MudNavLink>
+            <MudNavLink Href="/categories" Match="NavLinkMatch.All">@Translations.Dashboard_MainMenu_CategoriesBtn</MudNavLink>
         </MudNavMenu>
+        <MudSpacer/>
+        <MudSelect @bind-Value="MainLayout.Culture" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var culture in MainLayout.Cultures)
+            {
+                <MudSelectItem Value="@culture">@culture.DisplayName</MudSelectItem>
+            }
+        </MudSelect>
     </MudDrawer>
     <MudMainContent>
         @Body
@@ -26,10 +38,4 @@
 
 @code {
     [CascadingParameter] MainLayout MainLayout { get; set; }
-    bool _drawerOpen = true;
-
-    void ToggleDrawer()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
 }
