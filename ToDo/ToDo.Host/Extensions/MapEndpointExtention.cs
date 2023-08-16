@@ -10,6 +10,7 @@ namespace ToDo.Host.Extensions
         public static WebApplication MapApi(this WebApplication webApplication)
         {
             var group = webApplication.MapGroup("/api");
+            group.RequireAuthorization();
 
             group.MapGet("category/{id}",
                 async
@@ -64,7 +65,8 @@ namespace ToDo.Host.Extensions
                 async ([FromBody] EditCategoryCommand command, [FromServices] IMediator mediator) =>
             await mediator.Send(command));
 
-            group.MapPost("authorize", async (AuthenticationCommand command, [FromServices] IMediator mediator) =>
+            var loginGroup = webApplication.MapGroup("/api");
+            loginGroup.MapPost("authorize", async (AuthenticationCommand command, [FromServices] IMediator mediator) =>
             await mediator.Send(command));
 
             return webApplication;

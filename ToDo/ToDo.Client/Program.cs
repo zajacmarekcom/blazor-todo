@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using System.Globalization;
@@ -12,7 +13,8 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddHttpClient("Api",
-        client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/"));
+        client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/"))
+    .AddHttpMessageHandler<AccessTokenMessageHandler>();
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
     .CreateClient("Api"));
@@ -24,6 +26,7 @@ builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<ToDoAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
     sp.GetRequiredService<ToDoAuthenticationStateProvider>());
+builder.Services.AddTransient<AccessTokenMessageHandler>();
 
 builder.Services.AddMudServices();
 

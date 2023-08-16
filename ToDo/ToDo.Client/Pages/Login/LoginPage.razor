@@ -2,14 +2,6 @@
 @inject IConfiguration Configuration
 @inject NavigationManager Navigation
 
-<AuthorizeView>
-    <Authorized>
-        @{
-            Navigation.NavigateTo("/");
-        }
-    </Authorized>
-</AuthorizeView>
-
 <MudPaper Elevation="0" Class="mt-4">
 <MudGrid Justify="Justify.Center">
     <MudItem xs="12" md="6" lg="4">
