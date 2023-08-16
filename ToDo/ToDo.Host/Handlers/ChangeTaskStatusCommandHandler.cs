@@ -4,16 +4,16 @@ using ToDo.Shared.Commands;
 
 namespace ToDo.Host.Handlers;
 
-public class ChangeTaskStateCommandHandler : IRequestHandler<ChangeTaskStateCommand>
+public class ChangeTaskStatusCommandHandler : IRequestHandler<ChangeTaskStatusCommand>
 {
     private readonly ToDoDbContext _context;
 
-    public ChangeTaskStateCommandHandler(ToDoDbContext context)
+    public ChangeTaskStatusCommandHandler(ToDoDbContext context)
     {
         _context = context;
     }
 
-    public async Task Handle(ChangeTaskStateCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ChangeTaskStatusCommand request, CancellationToken cancellationToken)
     {
         var task = _context.Tasks.FirstOrDefault(x => x.Id ==  request.Id);
 

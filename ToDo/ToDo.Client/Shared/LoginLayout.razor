@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+@layout MainLayout
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudText Typo="Typo.h5" Class="ml-3">Blazor ToDo</MudText>
+        <MudSpacer/>
+        <MudToggleIconButton @bind-Toggled="MainLayout.IsDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" ToggledColor="Color.Inherit" ToggledIcon="@Icons.Material.Filled.DarkMode" />
+    </MudAppBar>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    [CascadingParameter] MainLayout MainLayout { get; set; }
+}

@@ -64,6 +64,9 @@ namespace ToDo.Host.Extensions
                 async ([FromBody] EditCategoryCommand command, [FromServices] IMediator mediator) =>
             await mediator.Send(command));
 
+            group.MapPost("authorize", async (AuthenticationCommand command, [FromServices] IMediator mediator) =>
+            await mediator.Send(command));
+
             return webApplication;
         }
     }

@@ -5,9 +5,10 @@
 Main purpose of this project is to be demo of Blazor technology.
 Author of this repository shows Blazor ToDo project design, development and maintaining on the Youtube channel: [https://youtube.com/@zajacmarek](https://youtube.com/@zajacmarek)
 Youtube channel and videos are in Polish.
+
 ## Technologies
 
-**Project is based on .NET 7.**
+**Project based on .NET 7.**
 
 Blazor ToDo, as the name suggests, uses Blazor. For now, it's Blazor WebAssembly (Blazor WASM).
 For backend part and for hosting Blazor app, project uses ASP.NET Core 7.

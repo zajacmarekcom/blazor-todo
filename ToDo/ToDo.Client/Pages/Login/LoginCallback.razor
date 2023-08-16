@@ -1,0 +1,35 @@
+﻿@page "/authentication/login-callback"
+@using ToDo.Client.Shared.Services;
+@using ToDo.Shared.Commands;
+@using ToDo.Shared.Dtos;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+@inject HttpClient Http
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" md="6" lg="4" Class="align-text-center">
+        <MudProgressCircular Color="Color.Info" Indeterminate="true" Size="Size.Large" />
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? Code { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Code is not null)
+        {
+            var result = await Http.PostAsJsonAsync("authorize", new AuthenticationCommand(Code));
+
+            if (result.IsSuccessStatusCode)
+            {
+                var user = await result.Content.ReadFromJsonAsync<UserDto?>();
+                await (AuthenticationStateProvider as ToDoAuthenticationStateProvider)!.AuthenticateAsync(user);
+                Navigation.NavigateTo("/");
+            }
+        }
+    }
+}

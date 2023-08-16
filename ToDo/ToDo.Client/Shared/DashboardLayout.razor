@@ -1,0 +1,35 @@
+﻿@using Microsoft.Extensions.Options;
+@inherits LayoutComponentBase
+@layout MainLayout
+
+@inject NavigationManager Navigation
+@inject IConfiguration Configuration
+
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="(() => ToggleDrawer())" />
+                <MudText Typo="Typo.h5" Class="ml-3">Blazor ToDo</MudText>
+                <MudSpacer />
+                <MudToggleIconButton @bind-Toggled="MainLayout.IsDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" ToggledColor="Color.Inherit" ToggledIcon="@Icons.Material.Filled.DarkMode" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0">
+        <MudNavMenu>
+            <MudNavLink Href="/" Match="NavLinkMatch.All">Tasks</MudNavLink>
+            <MudNavLink Href="/categories" Match="NavLinkMatch.All">Categories</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    [CascadingParameter] MainLayout MainLayout { get; set; }
+    bool _drawerOpen = true;
+
+    void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

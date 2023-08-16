@@ -1,6 +1,5 @@
 ﻿using ToDo.Shared.Dtos;
 using ToDo.Shared.Enums;
-using ToDo.Shared.Models;
 
 namespace ToDo.Shared.Services;
 

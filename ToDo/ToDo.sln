@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDo.Client", "ToDo.Client\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDo.Shared", "ToDo.Shared\ToDo.Shared.csproj", "{C3DAEF24-4E3A-41C8-B36A-096099655BB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDo.Host", "ToDo.Host\ToDo.Host.csproj", "{CED79250-A5F7-4577-AEC7-726667BA6957}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDo.Host", "ToDo.Host\ToDo.Host.csproj", "{CED79250-A5F7-4577-AEC7-726667BA6957}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
